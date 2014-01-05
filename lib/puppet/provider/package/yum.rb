@@ -107,10 +107,13 @@ Puppet::Type.type(:package).provide :yum, :parent => :rpm, :source => :rpm do
   end
 
   # handles yum-specific version comparison logic
-  def yumversioncmp(version_a, version_b)
+  # "version_should" supports "partial" version specification
+  # and globbing. version_is will always be at least version,
+  # and usually version-release
+  def yumversioncmp(version_should, version_is)
     vre = /[-.]|\d+|[^-.\d]+/
-    ax = version_a.scan(vre)
-    bx = version_b.scan(vre)
+    ax = version_should.scan(vre)
+    bx = version_is.scan(vre)
 
     while (ax.length>0 && bx.length>0)
       a = ax.shift
@@ -132,6 +135,6 @@ Puppet::Type.type(:package).provide :yum, :parent => :rpm, :source => :rpm do
         return a.upcase <=> b.upcase
       end
     end
-    version_a <=> version_b;
+    version_should <=> version_is;
   end
 end
