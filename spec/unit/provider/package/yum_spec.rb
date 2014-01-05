@@ -26,27 +26,29 @@ describe provider do
 
   describe 'package version comparison' do
 
-    it 'should match identical version and release as equal' do
+    # currently passing tests
+    it 'should evaluate identical version-release as equal' do
       v = @provider.yumversioncmp("1.2.3-1.el5", "1.2.3-1.el5")
       v.should == 0
     end
 
-    it 'should match identical version as equal' do
+    it 'should evaluate identical version as equal' do
       v = @provider.yumversioncmp("1.2.3", "1.2.3")
       v.should == 0
     end
 
-    it 'should show identical version but higher (b) release as older (-1)' do
+    it 'should evaluate identical version but higher (is) release as older (-1)' do
       v = @provider.yumversioncmp("1.2.3-1.el5", "1.2.3-2.el5")
       v.should == -1
     end
 
-    it 'should show identical version but lower (b) release as newer (1)' do
+    it 'should evaluate identical version but lower (is) release as newer (1)' do
       v = @provider.yumversioncmp("1.2.3-3.el5", "1.2.3-2.el5")
       v.should == 1
     end
 
-    it 'should show (a) version as equal to (b) same version with release' do
+    # these tests describe PUP-1244 logic yet to be implemented
+    it 'should evaluate any version as equal to the same version followed by release' do
       v = @provider.yumversioncmp("1.2.3", "1.2.3-2.el5")
       v.should == 0
     end
