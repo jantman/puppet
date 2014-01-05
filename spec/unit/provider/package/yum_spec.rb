@@ -24,6 +24,35 @@ describe provider do
     end
   end
 
+  describe 'package version comparison' do
+
+    it 'should match identical version and release as equal' do
+      v = @provider.yumversioncmp("1.2.3-1.el5", "1.2.3-1.el5")
+      v.should == 0
+    end
+
+    it 'should match identical version as equal' do
+      v = @provider.yumversioncmp("1.2.3", "1.2.3")
+      v.should == 0
+    end
+
+    it 'should show identical version but higher (b) release as older (-1)' do
+      v = @provider.yumversioncmp("1.2.3-1.el5", "1.2.3-2.el5")
+      v.should == -1
+    end
+
+    it 'should show identical version but lower (b) release as newer (1)' do
+      v = @provider.yumversioncmp("1.2.3-3.el5", "1.2.3-2.el5")
+      v.should == 1
+    end
+
+    it 'should show (a) version as equal to (b) same version with release' do
+      v = @provider.yumversioncmp("1.2.3", "1.2.3-2.el5")
+      v.should == 0
+    end
+
+  end
+
   describe 'when installing' do
     before(:each) do
       Puppet::Util.stubs(:which).with("rpm").returns("/bin/rpm")
