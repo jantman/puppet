@@ -1,5 +1,3 @@
-require 'puppet/util/package'
-
 Puppet::Type.type(:package).provide :yum, :parent => :rpm, :source => :rpm do
   desc "Support via `yum`.
 
@@ -68,7 +66,7 @@ Puppet::Type.type(:package).provide :yum, :parent => :rpm, :source => :rpm do
       # Add the package version
       wanted += "-#{should}"
       is = self.query
-      if is && Puppet::Util::Package.versioncmp(should, is[:ensure]) < 0
+      if is && yumversioncmp(should, is[:ensure]) < 0
         self.debug "Downgrading package #{@resource[:name]} from version #{is[:ensure]} to #{should}"
         operation = :downgrade
       end
@@ -106,5 +104,34 @@ Puppet::Type.type(:package).provide :yum, :parent => :rpm, :source => :rpm do
 
   def purge
     yum "-y", :erase, @resource[:name]
+  end
+
+  # handles yum-specific version comparison logic
+  def yumversioncmp(version_a, version_b)
+    vre = /[-.]|\d+|[^-.\d]+/
+    ax = version_a.scan(vre)
+    bx = version_b.scan(vre)
+
+    while (ax.length>0 && bx.length>0)
+      a = ax.shift
+      b = bx.shift
+
+      if( a == b )                 then next
+      elsif (a == '-' && b == '-') then next
+      elsif (a == '-')             then return -1
+      elsif (b == '-')             then return 1
+      elsif (a == '.' && b == '.') then next
+      elsif (a == '.' )            then return -1
+      elsif (b == '.' )            then return 1
+      elsif (a =~ /^\d+$/ && b =~ /^\d+$/) then
+        if( a =~ /^0/ or b =~ /^0/ ) then
+          return a.to_s.upcase <=> b.to_s.upcase
+        end
+        return a.to_i <=> b.to_i
+      else
+        return a.upcase <=> b.upcase
+      end
+    end
+    version_a <=> version_b;
   end
 end
