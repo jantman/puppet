@@ -155,28 +155,6 @@ Puppet::Type.type(:package).provide :yum, :parent => :rpm, :source => :rpm do
     yum "-y", :erase, @resource[:name]
   end
 
-  # @deprecated
-  def latest_info
-    Puppet.deprecation_warning("#{self.class}##{__method__} is deprecated and is no longer used.")
-    @latest_info
-  end
-
-  # @deprecated
-  def latest_info=(latest)
-    Puppet.deprecation_warning("#{self.class}##{__method__} is deprecated and is no longer used.")
-    @latest_info = latest
-  end
-
-  private
-
-  def enablerepo
-    scan_options(resource[:install_options], '--enablerepo')
-  end
-
-  def disablerepo
-    scan_options(resource[:install_options], '--disablerepo')
-  end
-
   # parse a yum "version" specification
   # this re-implements yum's
   # rpmUtils.miscutils.stringToVersion() in ruby
@@ -244,6 +222,28 @@ Puppet::Type.type(:package).provide :yum, :parent => :rpm, :source => :rpm do
       return -1
     end
     return rpmvercmp(s1, s2)
+  end
+
+  # @deprecated
+  def latest_info
+    Puppet.deprecation_warning("#{self.class}##{__method__} is deprecated and is no longer used.")
+    @latest_info
+  end
+
+  # @deprecated
+  def latest_info=(latest)
+    Puppet.deprecation_warning("#{self.class}##{__method__} is deprecated and is no longer used.")
+    @latest_info = latest
+  end
+
+  private
+
+  def enablerepo
+    scan_options(resource[:install_options], '--enablerepo')
+  end
+
+  def disablerepo
+    scan_options(resource[:install_options], '--disablerepo')
   end
 
   # Scan a structure that looks like the package type 'install_options'
