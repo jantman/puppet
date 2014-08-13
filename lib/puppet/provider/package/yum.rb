@@ -127,7 +127,8 @@ Puppet::Type.type(:package).provide :yum, :parent => :rpm, :source => :rpm do
 
       # FIXME: Should we raise an exception even if should == :latest
       # and yum updated us to a version other than @param_hash[:ensure] ?
-      raise Puppet::Error, "Failed to update to version #{should}, got version #{is[:ensure]} instead" if should != is[:ensure]
+      vercmp_result = yum_compareEVR(yum_parse_evr(should), yum_parse_evr(is[:ensure]))
+      raise Puppet::Error, "Failed to update to version #{should}, got version #{is[:ensure]} instead" if vercmp_result != 0
     end
   end
 
