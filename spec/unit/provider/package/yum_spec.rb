@@ -202,6 +202,13 @@ describe provider_class do
       provider.install
     end
 
+    it 'should handle partial versions specified' do
+      version = '1.3.4'
+      resource[:ensure] = version
+      provider.stubs(:query).returns :ensure => '1.3.4-1.el6'
+      provider.install
+    end
+
     it 'should be able to downgrade' do
       current_version = '1.2'
       version = '1.0'
